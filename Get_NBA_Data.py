@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[309]:
+# In[62]:
 
 import requests
 import pandas as pd
@@ -60,13 +60,13 @@ print(type(HEADERS))
 print(type(parameters))
 
 
-parameters['Season'] = '2014-15'
-response = requests.get('http://stats.nba.com/stats/leaguedashplayerstats', params=parameters, headers=HEADERS)
+#parameters['Season'] = '2014-15'
+#response = requests.get('http://stats.nba.com/stats/leaguedashplayerstats', params=parameters, headers=HEADERS)
 
 #print(response.content)
 
 
-# In[310]:
+# In[63]:
 
 start_yr = 1996
 end_yr = 2015
@@ -80,9 +80,10 @@ yr_list[:-1]
 print(yr_list)
 
 
-# In[313]:
+# In[93]:
 
 big_df = pd.DataFrame()
+
 
 
 for i in yr_list:
@@ -98,17 +99,23 @@ for i in yr_list:
     headers = response.json()['resultSets'][0]['headers']
     print(len(stats))
     df = pd.DataFrame(stats, columns = headers)
+    df['year'] = i
     big_df = big_df.append(df,ignore_index=True)
 
 
     
 print(big_df.head(n=2))
-print(big_df.tail(n=2))
+print(big_df.tail(n=5))
+
+big_df['player_year'] = big_df['PLAYER_NAME'] + big_df['year']
 
 
+# In[102]:
+
+print(big_df.columns)
 
 
-# In[315]:
+# In[95]:
 
 import sqlite3 as sql
 
@@ -116,37 +123,9 @@ import sqlite3 as sql
 con = sql.connect('nba_data.db')
 
 
-# In[317]:
+# In[96]:
 
-df.to_sql('advanced_stats',con, if_exists='replace')
-
-
-# In[320]:
-
-
-
-df2 = pd.read_sql('SELECT * FROM advanced_stats',con)
-
-
-# In[321]:
-
-
-print(df2.head())
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
+big_df.to_sql('advanced_stats',con, if_exists='replace')
 
 
 # In[ ]:
